@@ -1,0 +1,257 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Ask questions and search across your uploaded PDF documents."
+    />
+    <title>PDF AI Assistant</title>
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="site-header">
+        <a class="brand" href="./" aria-label="PDF AI Assistant home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 32 32" role="img">
+              <path d="M8.5 4.5h10l5 5v18h-15z" />
+              <path d="M18.5 4.5v6h5M12 17h8M12 21h6" />
+            </svg>
+          </span>
+          <span>
+            <strong>PDF AI Assistant</strong>
+            <small>Document intelligence, without the digging</small>
+          </span>
+        </a>
+
+        <div class="header-actions">
+          <span class="session-label" title="Your conversation is kept in this browser">
+            <span class="status-dot" aria-hidden="true"></span>
+            Private session
+          </span>
+          <button class="button button-quiet" id="new-conversation-button" type="button">
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M4 7h16M7 4v6M17 14v6M4 17h16M7 14v6M17 4v6" />
+            </svg>
+            New conversation
+          </button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <div class="intro">
+          <p class="eyebrow">Your document desk</p>
+          <h1>Ask better questions of your PDFs.</h1>
+          <p class="intro-copy">
+            Ask questions and search across your uploaded documents.
+          </p>
+        </div>
+
+        <div class="workspace-grid">
+          <aside class="documents-panel" id="documents-panel" aria-labelledby="documents-heading">
+            <div class="panel-heading">
+              <div>
+                <p class="eyebrow">Library</p>
+                <h2 id="documents-heading">Your documents</h2>
+              </div>
+              <button
+                class="icon-button mobile-only"
+                id="documents-toggle"
+                type="button"
+                aria-expanded="true"
+                aria-controls="documents-content"
+                aria-label="Collapse document library"
+              >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m6 9 6 6 6-6" />
+                </svg>
+              </button>
+            </div>
+
+            <div id="documents-content">
+              <div class="upload-zone" id="upload-zone" tabindex="0">
+                <input id="pdf-input" type="file" accept="application/pdf,.pdf" hidden />
+                <span class="upload-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <path d="M12 16V4M8 8l4-4 4 4M5 14v5h14v-5" />
+                  </svg>
+                </span>
+                <strong>Drop a PDF here</strong>
+                <span class="upload-hint">or browse from your device</span>
+                <button class="button button-outline button-small" id="browse-button" type="button">
+                  Choose PDF
+                </button>
+                <p class="upload-status" id="upload-status" role="status" aria-live="polite"></p>
+                <div class="progress-track" id="upload-progress" hidden>
+                  <div class="progress-bar" id="upload-progress-bar"></div>
+                </div>
+              </div>
+
+              <div class="library-meta">
+                <span id="document-count">0 documents</span>
+                <button class="text-button" id="refresh-documents-button" type="button">
+                  Refresh
+                </button>
+              </div>
+
+              <div class="document-list" id="document-list" aria-live="polite">
+                <div class="empty-library">
+                  <span class="empty-library-icon" aria-hidden="true">
+                    <svg viewBox="0 0 24 24">
+                      <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5zM4 5.5v16M8 7h8M8 11h8" />
+                    </svg>
+                  </span>
+                  <p>No PDFs yet</p>
+                  <span>Upload a document to start asking questions.</span>
+                </div>
+              </div>
+            </div>
+          </aside>
+
+          <section class="results-column" aria-labelledby="search-heading">
+            <div class="search-card">
+              <div class="search-card-heading">
+                <div>
+                  <p class="eyebrow">Ask your library</p>
+                  <h2 id="search-heading">What would you like to know?</h2>
+                </div>
+                <span class="search-shortcut" aria-hidden="true">Enter ↵</span>
+              </div>
+              <form class="search-form" id="search-form">
+                <label class="sr-only" for="query-input">Ask something about your documents</label>
+                <textarea
+                  id="query-input"
+                  name="query"
+                  rows="2"
+                  maxlength="2000"
+                  placeholder="Ask something about your documents..."
+                  autocomplete="off"
+                  required
+                ></textarea>
+                <button class="search-submit" id="search-button" type="submit">
+                  <span>Search documents</span>
+                  <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M5 12h13M13 6l6 6-6 6" />
+                  </svg>
+                </button>
+              </form>
+              <div class="search-footnote">
+                <span class="lock-icon" aria-hidden="true">
+                  <svg viewBox="0 0 24 24">
+                    <rect x="5" y="10" width="14" height="10" rx="2" />
+                    <path d="M8 10V7a4 4 0 0 1 8 0v3" />
+                  </svg>
+                </span>
+                Your question stays within this conversation
+              </div>
+            </div>
+
+            <div class="global-error" id="global-error" role="alert" hidden>
+              <span class="alert-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24">
+                  <circle cx="12" cy="12" r="9" />
+                  <path d="M12 8v5M12 16h.01" />
+                </svg>
+              </span>
+              <span id="global-error-message"></span>
+              <button class="icon-button" id="dismiss-error" type="button" aria-label="Dismiss error">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="m7 7 10 10M17 7 7 17" />
+                </svg>
+              </button>
+            </div>
+
+            <div class="loading-state" id="loading-state" role="status" aria-live="polite" hidden>
+              <span class="loading-orbit" aria-hidden="true"></span>
+              <div>
+                <strong>Searching your documents...</strong>
+                <span>Comparing your question with your library</span>
+              </div>
+            </div>
+
+            <div class="results-stack" id="results-stack">
+              <div class="welcome-state" id="welcome-state">
+                <div class="welcome-art" aria-hidden="true">
+                  <span class="welcome-orb orb-one"></span>
+                  <span class="welcome-orb orb-two"></span>
+                  <span class="welcome-orb orb-three"></span>
+                  <svg viewBox="0 0 80 80">
+                    <path d="M24 16h25l10 10v38H24z" />
+                    <path d="M49 16v12h10M32 42h19M32 50h13M32 34h8" />
+                    <circle cx="56" cy="59" r="11" />
+                    <path d="m64 67 7 7" />
+                  </svg>
+                </div>
+                <h3>Your answers are hiding in plain sight.</h3>
+                <p>Upload a PDF and ask a question to see an AI answer alongside the passages that support it.</p>
+              </div>
+
+              <article class="answer-card result-card" id="answer-section" hidden>
+                <div class="result-card-header">
+                  <div class="section-title">
+                    <span class="section-icon answer-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24">
+                        <path d="M12 3a8 8 0 0 0-5 14.25V20h10v-2.75A8 8 0 0 0 12 3Z" />
+                        <path d="M9 23h6M9 13h6M10 10h4" />
+                      </svg>
+                    </span>
+                    <div>
+                      <p class="eyebrow">Primary response</p>
+                      <h2>AI Answer</h2>
+                    </div>
+                  </div>
+                  <button class="button button-quiet button-small" id="copy-answer-button" type="button">
+                    <svg viewBox="0 0 24 24" aria-hidden="true">
+                      <rect x="8" y="8" width="11" height="12" rx="2" />
+                      <path d="M16 8V6a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h2" />
+                    </svg>
+                    <span>Copy answer</span>
+                  </button>
+                </div>
+                <div class="answer-content" id="answer-content"></div>
+                <div class="source-divider"></div>
+                <div class="sources-block">
+                  <div class="subsection-heading">
+                    <h3>Chatbot sources</h3>
+                    <span id="source-count"></span>
+                  </div>
+                  <div class="source-list" id="source-list"></div>
+                </div>
+              </article>
+
+              <section class="semantic-section" id="semantic-section" hidden aria-labelledby="semantic-heading">
+                <div class="section-heading-row">
+                  <div class="section-title">
+                    <span class="section-icon search-icon" aria-hidden="true">
+                      <svg viewBox="0 0 24 24">
+                        <circle cx="10.8" cy="10.8" r="6.8" />
+                        <path d="m16 16 5 5" />
+                        <path d="M8 11h5M10.5 8.5v5" />
+                      </svg>
+                    </span>
+                    <div>
+                      <p class="eyebrow">More like this</p>
+                      <h2 id="semantic-heading">Semantic Search Results</h2>
+                    </div>
+                  </div>
+                  <span class="result-count" id="result-count"></span>
+                </div>
+                <div class="semantic-list" id="semantic-list"></div>
+              </section>
+            </div>
+          </section>
+        </div>
+      </main>
+
+      <footer class="site-footer">
+        <span>PDF AI Assistant</span>
+        <span class="footer-separator" aria-hidden="true">·</span>
+        <span>Answers grounded in your documents</span>
+      </footer>
+    </div>
+    <div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+    <script src="js/app.js"></script>
+  </body>
+</html>
